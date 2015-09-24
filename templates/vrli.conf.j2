@@ -1,0 +1,19 @@
+__LOG_INSIGHT__
+<config>
+<version>
+<strata-version value="3.0.0-3021606" release-name="3.0 GA"/>
+</version>
+<distributed overwrite-children="true">
+<daemon port="16520" token="{{ node_uuid.stdout }}">
+<service-group name="standalone"/>
+</daemon>
+</distributed>
+<database>
+<password value="{{ db_password }}"/>
+<port value="12543"/>
+</database>
+<ntp>
+<ntp-servers value="{{ ntp_servers }}"/>
+</ntp>
+</config>
+__LOG_INSIGHT__

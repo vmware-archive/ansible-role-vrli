@@ -1,0 +1,29 @@
+- name: create vRLI config dir
+  file: path={{ config_dir }} state=directory recurse=yes mode="u=rw,g=rw,o=r"
+
+- name: create vRLI token
+  local_action: shell uuidgen
+  register: node_uuid
+
+- name: create token file
+  file: path={{ config_dir}}/{{ token_file }} mode="u=rw,g=rw,o=r"
+
+- name: copy vrli token to token file
+  copy: content={{ node_uuid.stdout }} dest={{ config_dir }}/{{ token_file }}
+
+- name: copy config file to vRLI config dir
+  template:
+    src: ../templates/vrli.conf.j2
+    dest: '{{ config_dir }}/{{ config_file }}'
+
+# - name: restart vRLI
+#   vsphere_guest:
+#     vcenter_hostname: "{{ vcenter_host }}"
+#     username: "{{ vcenter_user }}"
+#     password: "{{ vcenter_password }}"
+#     guest: "{{ vrli_name }}"
+#     state: restarted
+
+- name: set admin password
+  shell: >
+    ADMINPASSWORD={{ admin_password }} /opt/vmware/bin/li-reset-admin-passwd.sh -p 12543

@@ -1,0 +1,56 @@
+#
+#  Copyright 2015 VMware, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+---
+
+- name: Power off existing VM if one exists
+  vsphere_guest:
+    vcenter_hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_user }}"
+    password: "{{ vcenter_password }}"
+    guest: "{{ vrli_name }}"
+    state: powered_off
+
+
+- name: deploy vRealize Log Insight OVA
+  shell: >
+    {{ ovftool }}
+    '--name={{ vrli_name }}'
+    --acceptAllEulas
+    --overwrite
+    --allowExtraConfig
+    --skipManifestCheck
+    --noSSLVerify
+    --diskMode=thin
+    --deploymentOption={{ deployment_size }}
+    '-ds={{ vrli_datastore }}'
+    '--net:Network 1={{ vrli_network }}'
+    --prop:vm.rootpw=VMware1!
+    --prop:vm.rootpw.VMware_vCenter_Log_Insight=VMware1!
+    '--prop:ip0={{ vrli_ip }}'
+    '--prop:vami.gateway.VMware_vCenter_Log_Insight={{ vrli_gateway }}'
+    '--prop:vami.DNS.VMware_vCenter_Log_Insight={{ vrli_dns }}'
+    '--prop:vami.ip0.VMware_vCenter_Log_Insight={{ vrli_ip }}'
+    '--prop:vami.netmask0.VMware_vCenter_Log_Insight={{ vrli_netmask }}'
+    --ipAllocationPolicy=fixedPolicy
+    '--powerOn={{ start_vm }}'
+    '--X:waitForIp'
+    '{{ vrli_ova_location }}/{{ vrli_ova }}'
+    'vi://{{ vcenter_user | urlencode }}:{{ vcenter_password | urlencode }}@{{ vcenter_host }}:443/{{ datacenter_name }}/host/{{ vrli_cluster }}'
+  tags:
+    - OVA
+
+- name: add new IP to ansible hosts
+  add_host: name={{ vrli_ip }} groups=vrli_host

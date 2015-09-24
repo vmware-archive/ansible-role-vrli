@@ -1,0 +1,6 @@
+---
+# vars file for vrli
+vrli_name: vRLI
+vrli_datastore: ds-site-a-nfs-01
+vrli_network: VIO Management
+vcenter_host: vc-01a.corp.local
