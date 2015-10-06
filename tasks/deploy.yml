@@ -22,7 +22,7 @@
     password: "{{ mgmt_vc_password }}"
     guest: "{{ vrli_name }}"
     state: powered_off
-
+  ignore_errors: True
 
 - name: deploy vRealize Log Insight OVA
   shell: >
@@ -48,9 +48,9 @@
     '--powerOn={{ start_vm }}'
     '--X:waitForIp'
     '{{ vrli_ova_location }}/{{ vrli_ova }}'
-    'vi://{{ vcenter_user | urlencode }}:{{ vcenter_password | urlencode }}@{{ vcenter_host }}:443/{{ datacenter_name }}/host/{{ vrli_cluster }}'
+    'vi://{{ mgmt_vc_username | urlencode }}:{{ mgmt_vc_password | urlencode }}@{{ mgmt_vc }}:443/{{ mgmt_vc_datacenter }}/host/{{ vrli_cluster }}'
   tags:
     - OVA
 
-- name: add new IP to ansible hosts
-  add_host: name={{ vrli_ip }} groups=vrli_host
+- name: Notice -- Waiting on VM avaiability.
+  wait_for: port=80 delay=30 timeout=600

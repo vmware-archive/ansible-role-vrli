@@ -14,19 +14,7 @@
 #  limitations under the License.
 #
 ---
-- name: create temp directory for content pack files
-  file: dest=/var/content state=directory recurse=yes
-
-- name: copy content packs to loginsight vm
-  copy: src={{ item }} dest=/var/content
-  with_fileglob:
-    - "{{ vrli_ova_location }}/*.vlcp"
-
-- name: install content packs
-  script: copy_packs.sh
-
-- name: restarting loginsight
-  command: service loginsight restart
-
-- name: Notice -- Waiting on VM availability.
-  wait_for: port=9160 delay=30 timeout=300
+- name: Install pip modules
+  pip: name="{{ item }}" state=latest
+  with_items:
+    - pysphere

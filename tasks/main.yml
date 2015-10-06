@@ -15,6 +15,9 @@
 #
 ---
 
+- include: installs.yml
+  when: action == 'deploy'
+
 - include: deploy.yml
   when: action == 'deploy'
 

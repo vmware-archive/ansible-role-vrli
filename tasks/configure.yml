@@ -1,12 +1,30 @@
+#
+#  Copyright 2015 VMware, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
 - name: create vRLI config dir
   file: path={{ config_dir }} state=directory recurse=yes mode="u=rw,g=rw,o=r"
 
 - name: create vRLI token
-  local_action: shell uuidgen
+  shell: uuidgen
   register: node_uuid
 
+- name: remove any existing configuration files
+  command: 'rm -f {{ config_dir }}/*'
+
 - name: create token file
-  file: path={{ config_dir}}/{{ token_file }} mode="u=rw,g=rw,o=r"
+  file: path={{ config_dir}}/{{ token_file }} mode="u=rw,g=rw,o=r" state=touch
 
 - name: copy vrli token to token file
   copy: content={{ node_uuid.stdout }} dest={{ config_dir }}/{{ token_file }}
@@ -16,14 +34,15 @@
     src: ../templates/vrli.conf.j2
     dest: '{{ config_dir }}/{{ config_file }}'
 
-# - name: restart vRLI
-#   vsphere_guest:
-#     vcenter_hostname: "{{ vcenter_host }}"
-#     username: "{{ vcenter_user }}"
-#     password: "{{ vcenter_password }}"
-#     guest: "{{ vrli_name }}"
-#     state: restarted
+- name: Restaring Log Insight service
+  command: service loginsight restart
+
+- name: Notice -- Waiting on VM availability.
+  wait_for: port=9160 delay=30 timeout=300
+
+- name: Notice -- delaying 30 seconds for DB settling.
+  wait_for: port=9160 delay=30 timeout=300
 
 - name: set admin password
   shell: >
-    ADMINPASSWORD={{ admin_password }} /opt/vmware/bin/li-reset-admin-passwd.sh -p 12543
+    ADMINPASSWORD={{ admin_password }} /opt/vmware/bin/li-reset-admin-passwd.sh
