@@ -15,7 +15,7 @@ vrli_name: The name of the vApp to create
 Dependencies
 ------------
 
-- Pip
+- pip
 - ovftool
 
 Example Playbook
@@ -29,4 +29,5 @@ Example Playbook
   vars:
     - update_pkg_cache: "yes"
   vars_files:
-    - /var/lib/supervio/answerfile.yml
+    - /var/lib/supersddc/vcenter.yml
+    - /var/lib/supersddc/answerfile.yml

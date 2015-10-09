@@ -14,7 +14,7 @@
 #  limitations under the License.
 #
 vrli_ova_location: "/var/www/html/downloads"
-vrli_ova: "vrli.ova"
+vrli_ova: "VMware-vRealize-Log-Insight-3.0.0-3021606.ova"
 start_vm: True
 deployment_size: xsmall
 ovftool: /usr/local/bin/ovftool/ovftool

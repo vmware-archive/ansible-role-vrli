@@ -17,9 +17,9 @@
 
 - name: Power off existing VM if one exists
   vsphere_guest:
-    vcenter_hostname: "{{ vcenter_host }}"
-    username: "{{ vcenter_user }}"
-    password: "{{ vcenter_password }}"
+    vcenter_hostname: "{{ mgmt_vc }}"
+    username: "{{ mgmt_vc_username }}"
+    password: "{{ mgmt_vc_password }}"
     guest: "{{ vrli_name }}"
     state: powered_off
 
