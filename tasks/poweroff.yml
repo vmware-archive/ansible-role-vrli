@@ -13,25 +13,16 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
----
 
-- include: installs.yml
-  when: action == 'deploy'
-
-- include: deploy.yml
-  when: action == 'deploy'
-
-- include: configure.yml
-  when: action == 'configure'
-
-- include: configure_worker.yml
-  when: action == 'configure_workers' and deployment_type == clustered
-
-- include: content-packs.yml
-  when: action == 'content'
-
-- include: poweron.yml
-  when: action == 'poweron'
-
-- include: poweroff.yml
-  when: action == 'poweroff'
+- name: Power off vRLI
+  vsphere_guest:
+    vcenter_hostname: "{{ vcenter_host }}"
+    username: "{{ vcenter_user }}"
+    password: "{{ vcenter_password }}"
+    guest: "{{ item }}"
+    state: powered_off
+  ignore_errors: True
+  with_items:
+    - "{{ vrli_name }}"
+    - "{{ vrli_name_1 }}"
+    - "{{ vrli_name_2 }}"

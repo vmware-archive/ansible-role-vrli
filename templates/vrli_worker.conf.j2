@@ -3,14 +3,14 @@
 <strata-version value="3.0.0-3021606" release-name="3.0 GA"/>
 </version>
 <distributed overwrite-children="true">
-<daemon host="{{ vrli_ip }}" port="16520" token="{{ node_uuid.stdout }}">
-<service-group name="standalone"/>
-</daemon>
 <daemon host="{{ vrli_ip_1 }}" port="16520" token="{{ node_uuid.stdout }}">
 <service-group name="workernode" />
 </daemon>
 <daemon host="{{ vrli_ip_2 }}" port="16520" token="{{ node_uuid.stdout }}">
 <service-group name="workernode" />
+<daemon host="{{ vrli_ip }}" port="16520" token="{{ node_uuid.stdout }}">
+<service-group name="standalone"/>
+</daemon>
 </daemon>
 </distributed>
 <database>

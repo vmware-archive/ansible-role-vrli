@@ -15,9 +15,17 @@
 #
 vrli_ova_location: "/var/www/html/downloads"
 vrli_ova: "VMware-vRealize-Log-Insight-3.0.0-3021606.ova"
-start_vm: True
-deployment_size: xsmall
+start_vm: False
+deployment_size: medium
 ovftool: /usr/local/bin/ovftool/ovftool
+
+vcenter_host: vc-01a.corp.local
+vcenter_user: CORP\Administrator
+vcenter_password: VMware1!
+vcenter_port: '443'
+
+datacenter_name: 'VIO Datacenter'
+vrli_cluster: 'Management Cluster'
 
 admin_password: VMware1!
 db_password: VMware1!
@@ -27,6 +35,24 @@ config_file: "loginsight-config.xml#1"
 token_file: node-token
 
 vrli_ip: 192.168.100.131
+<<<<<<< Updated upstream
+=======
+vrli_host_name: vrli
+vrli_name: vRLI
+>>>>>>> Stashed changes
 vrli_gateway: 192.168.100.1
 vrli_dns: 192.168.110.10
 vrli_netmask: 255.255.255.0
+<<<<<<< Updated upstream
+=======
+vrli_root_password: VMware1!
+
+vrli_ip_1: 192.168.100.132
+vrli_host_name_1: vrli-worker-1
+vrli_name_1: vRLI-worker-1
+
+vrli_ip_2: 192.168.100.133
+vrli_host_name_2: vrli-worker-2
+vrli_name_2: vRLI-worker-2
+ip_policy: fixedPolicy
+>>>>>>> Stashed changes

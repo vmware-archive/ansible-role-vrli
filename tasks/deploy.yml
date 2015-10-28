@@ -15,19 +15,13 @@
 #
 ---
 
-- name: Power off existing VM if one exists
-  vsphere_guest:
-    vcenter_hostname: "{{ mgmt_vc }}"
-    username: "{{ mgmt_vc_username }}"
-    password: "{{ mgmt_vc_password }}"
-    guest: "{{ vrli_name }}"
-    state: powered_off
-  ignore_errors: True
+# Power off VMs if they're not already
+- include: poweroff.yml
 
-- name: deploy vRealize Log Insight OVA
+- name: deploy vRealize Log Insight master node
   shell: >
     {{ ovftool }}
-    '--name={{ vrli_name }}'
+    '--name={{ item.vrli_name }}'
     --acceptAllEulas
     --overwrite
     --allowExtraConfig
@@ -40,11 +34,16 @@
     --prop:vm.rootpw=VMware1!
     --prop:vm.rootpw.VMware_vCenter_Log_Insight=VMware1!
     '--prop:ip0={{ vrli_ip }}'
+    '--prop:vm.rootpw={{ vrli_root_password }}'
+    '--prop:vm.rootpw.VMware_vCenter_Log_Insight={{ vrli_root_password }}'
+    '--prop:ip0={{ item.vrli_ip }}'
     '--prop:vami.gateway.VMware_vCenter_Log_Insight={{ vrli_gateway }}'
     '--prop:vami.DNS.VMware_vCenter_Log_Insight={{ vrli_dns }}'
-    '--prop:vami.ip0.VMware_vCenter_Log_Insight={{ vrli_ip }}'
+    '--prop:vami.ip0.VMware_vCenter_Log_Insight={{ item.vrli_ip }}'
     '--prop:vami.netmask0.VMware_vCenter_Log_Insight={{ vrli_netmask }}'
     --ipAllocationPolicy=fixedPolicy
+    '--prop:vami.hostname.VMware_vCenter_Log_Insight={{ item.vrli_host_name }}'
+    --ipAllocationPolicy={{ ip_policy }}
     '--powerOn={{ start_vm }}'
     '--X:waitForIp'
     '{{ vrli_ova_location }}/{{ vrli_ova }}'
@@ -52,5 +51,54 @@
   tags:
     - OVA
 
-- name: Notice -- Waiting on VM avaiability.
-  wait_for: port=80 delay=30 timeout=600
+- name: deploy vRealize Log Insight worker nodes
+  shell: >
+    {{ ovftool }}
+    '--name={{ item.vrli_name }}'
+    --acceptAllEulas
+    --overwrite
+    --allowExtraConfig
+    --skipManifestCheck
+    --noSSLVerify
+    --diskMode=thin
+    --deploymentOption={{ deployment_size }}
+    '-ds={{ vrli_datastore }}'
+    '--net:Network 1={{ vrli_network }}'
+    '--prop:vm.rootpw={{ vrli_root_password }}'
+    '--prop:vm.rootpw.VMware_vCenter_Log_Insight={{ vrli_root_password }}'
+    '--prop:ip0={{ item.vrli_ip }}'
+    '--prop:vami.gateway.VMware_vCenter_Log_Insight={{ vrli_gateway }}'
+    '--prop:vami.DNS.VMware_vCenter_Log_Insight={{ vrli_dns }}'
+    '--prop:vami.ip0.VMware_vCenter_Log_Insight={{ item.vrli_ip }}'
+    '--prop:vami.netmask0.VMware_vCenter_Log_Insight={{ vrli_netmask }}'
+    '--prop:vami.hostname.VMware_vCenter_Log_Insight={{ item.vrli_host_name }}'
+    --ipAllocationPolicy={{ ip_policy }}
+    '--powerOn={{ start_vm }}'
+    '--X:waitForIp'
+    '{{ vrli_ova_location }}/{{ vrli_ova }}'
+    'vi://{{ vcenter_user | urlencode }}:{{ vcenter_password | urlencode }}@{{ vcenter_host }}:443/{{ datacenter_name }}/host/{{ vrli_cluster }}'
+  tags:
+    - OVA
+  with_items:
+    - { vrli_ip: '{{ vrli_ip_1 }}', vrli_host_name: '{{ vrli_host_name_1 }}', vrli_name: '{{ vrli_name_1 }}' }
+    - { vrli_ip: '{{ vrli_ip_2 }}', vrli_host_name: '{{ vrli_host_name_2 }}', vrli_name: '{{ vrli_name_2 }}' }
+  when: deployment_type == clustered
+
+- name: Notice -- Waiting on master node avaiability.
+  wait_for: host={{ vrli_ip }} port=80 timeout=600
+
+- name: deploy local ssh public key to master node
+  command: 'cat /home/vmware/.ssh/id_rsa.pub | ssh root@{{ item }} "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys"'
+  with_items:
+    - "{{ vrli_ip }}"
+
+- name: Notice -- Waiting on worker node avaiability.
+  wait_for: host={{ vrli_ip_2 }} port=80 timeout=600
+  when: deployment_type == clustered
+
+- name: deploy local ssh public key to worker nodes
+  command: 'cat /home/vmware/.ssh/id_rsa.pub | ssh root@{{ item }} "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys"'
+  with_items:
+    - "{{ vrli_ip_1 }}"
+    - "{{ vrli_ip_2 }}"
+  when: deployment_type == clustered
