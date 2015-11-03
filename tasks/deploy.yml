@@ -34,18 +34,13 @@
     --prop:vm.rootpw=VMware1!
     --prop:vm.rootpw.VMware_vCenter_Log_Insight=VMware1!
     '--prop:ip0={{ vrli_ip }}'
-    '--prop:vm.rootpw={{ vrli_root_password }}'
-    '--prop:vm.rootpw.VMware_vCenter_Log_Insight={{ vrli_root_password }}'
-    '--prop:ip0={{ vrli_ip }}'
     '--prop:vami.gateway.VMware_vCenter_Log_Insight={{ vrli_gateway }}'
     '--prop:vami.DNS.VMware_vCenter_Log_Insight={{ vrli_dns }}'
     '--prop:vami.ip0.VMware_vCenter_Log_Insight={{ vrli_ip }}'
     '--prop:vami.netmask0.VMware_vCenter_Log_Insight={{ vrli_netmask }}'
-    --ipAllocationPolicy=fixedPolicy
     '--prop:vami.hostname.VMware_vCenter_Log_Insight={{ vrli_host_name }}'
     --ipAllocationPolicy={{ ip_policy }}
     '--powerOn={{ start_vm }}'
-    '--X:waitForIp'
     '{{ vrli_ova_location }}/{{ vrli_ova }}'
     'vi://{{ mgmt_vc_username | urlencode }}:{{ mgmt_vc_password | urlencode }}@{{ mgmt_vc }}:443/{{ mgmt_vc_datacenter }}/host/{{ vrli_cluster }}'
   tags:
@@ -54,7 +49,7 @@
 - name: deploy vRealize Log Insight worker nodes
   shell: >
     {{ ovftool }}
-    '--name={{ item.vrli_name }}'
+    '--name={{ vrli_name }}'
     --acceptAllEulas
     --overwrite
     --allowExtraConfig
@@ -64,8 +59,8 @@
     --deploymentOption={{ deployment_size }}
     '-ds={{ vrli_datastore }}'
     '--net:Network 1={{ vrli_network }}'
-    '--prop:vm.rootpw={{ vrli_root_password }}'
-    '--prop:vm.rootpw.VMware_vCenter_Log_Insight={{ vrli_root_password }}'
+    --prop:vm.rootpw=VMware1!
+    --prop:vm.rootpw.VMware_vCenter_Log_Insight=VMware1!
     '--prop:ip0={{ item.vrli_ip }}'
     '--prop:vami.gateway.VMware_vCenter_Log_Insight={{ vrli_gateway }}'
     '--prop:vami.DNS.VMware_vCenter_Log_Insight={{ vrli_dns }}'
@@ -74,9 +69,8 @@
     '--prop:vami.hostname.VMware_vCenter_Log_Insight={{ item.vrli_host_name }}'
     --ipAllocationPolicy={{ ip_policy }}
     '--powerOn={{ start_vm }}'
-    '--X:waitForIp'
     '{{ vrli_ova_location }}/{{ vrli_ova }}'
-    'vi://{{ vcenter_user | urlencode }}:{{ vcenter_password | urlencode }}@{{ vcenter_host }}:443/{{ datacenter_name }}/host/{{ vrli_cluster }}'
+    'vi://{{ mgmt_vc_username | urlencode }}:{{ mgmt_vc_password | urlencode }}@{{ mgmt_vc }}:443/{{ mgmt_vc_datacenter }}/host/{{ vrli_cluster }}'
   tags:
     - OVA
   with_items:
