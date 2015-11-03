@@ -25,7 +25,7 @@
   when: action == 'configure'
 
 - include: configure_worker.yml
-  when: action == 'configure_workers' and deployment_type == clustered
+  when: action == 'configure_workers' and deployment_type == 'clustered'
 
 - include: content-packs.yml
   when: action == 'content'

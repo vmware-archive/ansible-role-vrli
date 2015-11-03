@@ -21,7 +21,7 @@
 - name: deploy vRealize Log Insight master node
   shell: >
     {{ ovftool }}
-    '--name={{ item.vrli_name }}'
+    '--name={{ vrli_name }}'
     --acceptAllEulas
     --overwrite
     --allowExtraConfig
@@ -36,13 +36,13 @@
     '--prop:ip0={{ vrli_ip }}'
     '--prop:vm.rootpw={{ vrli_root_password }}'
     '--prop:vm.rootpw.VMware_vCenter_Log_Insight={{ vrli_root_password }}'
-    '--prop:ip0={{ item.vrli_ip }}'
+    '--prop:ip0={{ vrli_ip }}'
     '--prop:vami.gateway.VMware_vCenter_Log_Insight={{ vrli_gateway }}'
     '--prop:vami.DNS.VMware_vCenter_Log_Insight={{ vrli_dns }}'
-    '--prop:vami.ip0.VMware_vCenter_Log_Insight={{ item.vrli_ip }}'
+    '--prop:vami.ip0.VMware_vCenter_Log_Insight={{ vrli_ip }}'
     '--prop:vami.netmask0.VMware_vCenter_Log_Insight={{ vrli_netmask }}'
     --ipAllocationPolicy=fixedPolicy
-    '--prop:vami.hostname.VMware_vCenter_Log_Insight={{ item.vrli_host_name }}'
+    '--prop:vami.hostname.VMware_vCenter_Log_Insight={{ vrli_host_name }}'
     --ipAllocationPolicy={{ ip_policy }}
     '--powerOn={{ start_vm }}'
     '--X:waitForIp'
@@ -82,7 +82,7 @@
   with_items:
     - { vrli_ip: '{{ vrli_ip_1 }}', vrli_host_name: '{{ vrli_host_name_1 }}', vrli_name: '{{ vrli_name_1 }}' }
     - { vrli_ip: '{{ vrli_ip_2 }}', vrli_host_name: '{{ vrli_host_name_2 }}', vrli_name: '{{ vrli_name_2 }}' }
-  when: deployment_type == clustered
+  when: deployment_type == "clustered"
 
 - name: Notice -- Waiting on master node avaiability.
   wait_for: host={{ vrli_ip }} port=80 timeout=600
@@ -94,11 +94,11 @@
 
 - name: Notice -- Waiting on worker node avaiability.
   wait_for: host={{ vrli_ip_2 }} port=80 timeout=600
-  when: deployment_type == clustered
+  when: deployment_type == "clustered"
 
-- name: deploy local ssh public key to worker nodes
-  command: 'cat /home/vmware/.ssh/id_rsa.pub | ssh root@{{ item }} "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys"'
-  with_items:
-    - "{{ vrli_ip_1 }}"
-    - "{{ vrli_ip_2 }}"
-  when: deployment_type == clustered
+# - name: deploy local ssh public key to worker nodes
+#   command: 'cat /home/vmware/.ssh/id_rsa.pub | ssh root@{{ item }} "mkdir -p ~/.ssh && cat >>  ~/.ssh/authorized_keys"'
+#   with_items:
+#     - "{{ vrli_ip_1 }}"
+#     - "{{ vrli_ip_2 }}"
+#   when: deployment_type == "clustered"
