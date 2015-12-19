@@ -13,27 +13,59 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
+
+# The location of the vRLI installation OVA media.
 vrli_ova_location: "/var/www/html/downloads"
+
+# The particular OVA to deploy.
 vrli_ova: "VMware-vRealize-Log-Insight-3.0.0-3021606.ova"
+
+# Whether to start the appliance upon deployments.
 start_vm: True
+
+# The install size (memory/cpu/etc.) of the appliance(s).
 deployment_size: medium
+
+# The location of the ovftool to use for deploying the appliance(s).
 ovftool: /usr/local/bin/ovftool/ovftool
 
+# The hostname for the appliance.
 vcenter_host: vc-01a.corp.local
+
+# The administrator user to use for deploying the appliance(s).
 vcenter_user: CORP\Administrator
+
+# The administrator password to use for deploying the appliance(s).
 vcenter_password: VMware1!
+
+# The vCenter port to use for API communications.
 vcenter_port: '443'
 
-datacenter_name: 'VIO Datacenter'
+# The vCenter Datacenter name to use when deploying.
+datacenter_name: 'Datacenter'
+
+# The vCenter cluster into which to deploy.
 vrli_cluster: 'Management Cluster'
 
+# The password to set for the administrator users on the appliance nodes.
 admin_password: VMware1!
+
+# The password to set for the administrator users on the database nodes.
 db_password: VMware1!
+
+# NTP servers to use.
 ntp_servers: "0.pool.ntp.org, 1.pool.ntp.org"
+
+# Where the configuration files are stored in the appliance(s).
 config_dir: /storage/core/loginsight/config
+
+# The configuration file this deployment will modify appropriately.
 config_file: "loginsight-config.xml#1"
+
+# The file in which the security token exists.
 token_file: node-token
 
+# Variables relevant to the master node.
 vrli_ip: 192.168.100.131
 vrli_host_name: vrli
 vrli_name: vrli-master
@@ -42,10 +74,12 @@ vrli_dns: 192.168.110.10
 vrli_netmask: 255.255.255.0
 vrli_root_password: VMware1!
 
+# Variables relevant to the first worker node.
 vrli_ip_1: 192.168.100.132
 vrli_host_name_1: vrli-worker-1
 vrli_name_1: vrli-worker-1
 
+# Variables relevant to the second worker node.
 vrli_ip_2: 192.168.100.133
 vrli_host_name_2: vrli-worker-2
 vrli_name_2: vrli-worker-2

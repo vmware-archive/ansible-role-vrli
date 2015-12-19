@@ -8,11 +8,7 @@ This role currently supports Debian/Ubuntu distros and requires a valid installa
 
 ## Role Variables
 
-    vrli_name: "vrli"
-
-The name of the vApp to create
-
-TODO: fix pursuant to defauls
+TODO: update pursuant to defaults.
 
 ## Example playbook
 
