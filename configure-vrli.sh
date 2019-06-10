@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# Copyright 2015 VMware, Inc.  All rights reserved.
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-only
+#
 
 $CONFIG_DIR = /var/storage/loginsight/config
 $CONFIG_FILE = loginsight-config.xml#1

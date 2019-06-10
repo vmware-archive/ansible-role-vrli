@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# Copyright 2015 VMware, Inc.  All rights reserved.
+# SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-only
+#
 
 FILES=/var/content/*
 COUNT=0
